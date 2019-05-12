@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c59a09585a7684a4fba572938d16084e
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - ShootSFX: {instanceID: 0}
+  - WeaponSprite: {instanceID: 0}
+  - bulletFlyingClip: {instanceID: 0}
+  - bulletExplosionClip: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

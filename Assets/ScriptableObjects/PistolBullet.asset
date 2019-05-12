@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c53ad2b3b21a754d9a5243a3d3d4d5a, type: 3}
+  m_Name: PistolBullet
+  m_EditorClassIdentifier: 
+  BulletLifetime: 3
+  bulletFlyingClip: {fileID: 7400000, guid: 57aadc66f60f61044bbe0f15ed8d3819, type: 2}
+  bulletExplosionClip: {fileID: 7400000, guid: cdfb1ebc8922685409811b68c9ab0b7f, type: 2}
