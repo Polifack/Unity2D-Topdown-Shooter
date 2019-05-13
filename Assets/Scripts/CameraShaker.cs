@@ -5,7 +5,7 @@ using UnityEngine;
 public class CameraShaker : MonoBehaviour
 {
     private Vector3 cameraInitPos;
-    public float shakeMagnitude = 0.05f, shakeTime = 0.5f;
+    public float shakeMagnitude = 0.05f;
 
     public static CameraShaker singleton;
 
@@ -15,7 +15,7 @@ public class CameraShaker : MonoBehaviour
             singleton = this;
     }
 
-    public void Shake()
+    public void Shake(float shakeTime)
     {
         cameraInitPos = Camera.main.transform.position;
         InvokeRepeating("StartShake", 0f, 0.005f);

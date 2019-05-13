@@ -33,7 +33,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Shooting Settings")]
     public GameObject aimLine;
-    public Weapon Weapon;
+    public Gun Weapon;
 
     private void Awake()
     {
@@ -158,7 +158,7 @@ public class PlayerController : MonoBehaviour
 
             //soundPlayer.PlayOneShot(takeDamage);
 
-            CameraShaker.singleton.Shake();
+            CameraShaker.singleton.Shake(0.1f);
             
             yield return new WaitForSeconds(0.2f);
             canMove = true;

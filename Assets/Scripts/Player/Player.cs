@@ -4,15 +4,18 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public float WalkSpeed = 5f;
+    public static Player instance;
 
     IPlayerState state;
     Rigidbody2D rb;
     Animator anim;
     AudioSource aud;
     Vector2 lookDirection = new Vector2(1, 0);
-    
+    PlayerHealthManager healthManager;
 
+    [Header("Player Data")]
+    public float WalkSpeed = 5f;
+    public int MaxHP = 10;
 
     [Header("Particle Settings")]
     public ParticleSystem WalkingParticles;
@@ -25,7 +28,8 @@ public class Player : MonoBehaviour
 
     [Header("Shoot Settings")]
     public GameObject aimLine;
-    public Weapon Weapon;
+    public Gun Weapon;
+    public Guitar Guitar;
 
     public IPlayerState State { get => state; set => state = value; }
     public Rigidbody2D Rb { get => rb; set => rb = value; }
@@ -34,11 +38,17 @@ public class Player : MonoBehaviour
 
     private void Awake()
     {
+        if (instance == null) instance = this;
+        else Destroy(gameObject);
+
         state = PlayerState.STATE_IDLE;
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         aud = GetComponent<AudioSource>();
-
+    }
+    private void Start()
+    {
+        healthManager = new PlayerHealthManager(MaxHP);
     }
     private void Update()
     {
@@ -47,8 +57,23 @@ public class Player : MonoBehaviour
         HandleRayCasting();
     }
 
-
-
+    //Esto debería ser lógica del estado. Idle -> recibe daño; Walking -> recibe daño; Dodging -> no recibe daño
+    public void Heal(int n)
+    {
+        healthManager.DoHealing(n);
+    }
+    public void Damage(int n)
+    {
+        healthManager.DoDamage(n);
+    }
+    void OnGUI()
+    {
+        if (GUI.Button(new Rect(50, 1000, 80, 50), "DAMAGE"))
+            healthManager.DoDamage(1);
+        if (GUI.Button(new Rect(135, 1000, 80, 50), "HEAL"))
+            healthManager.DoHealing(1);
+    }
+    //
     public void HandleInput(Input input)
     {
         State.HandleInput(this);
@@ -71,7 +96,9 @@ public class Player : MonoBehaviour
     public void HandleShooting()
     {
         if (Input.GetMouseButtonDown(0))
-            StartCoroutine(Weapon.Shoot(lookDirection));
+            StartCoroutine(Guitar.Shred());
+            //StartCoroutine(Weapon.Shoot(lookDirection));
+        
     }
     public void HandleRayCasting()
     {
@@ -87,7 +114,6 @@ public class Player : MonoBehaviour
             }
         }
     }
-
     public void HandlePlayerAim()
     {
         Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
