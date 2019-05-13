@@ -5245,11 +5245,12 @@ MonoBehaviour:
   shredTime: 0.3
   animatorSpeed: 3
   lightIntensity: 0.75
+  cooldownTransparency: 0.25
   shakeDuration: 0.1
   musicParticlesLifetime: 1
   particles: {fileID: 8843623212118284538}
   soundCollider: {fileID: 2062003113542826530}
-  SoundForce: 0
+  SoundForce: 500
 --- !u!95 &2971384653314260532
 Animator:
   serializedVersion: 3

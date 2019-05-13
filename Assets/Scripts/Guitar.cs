@@ -14,13 +14,13 @@ public class Guitar : MonoBehaviour
     public float shredTime;
     public float animatorSpeed;
     public float lightIntensity;
+    public float cooldownTransparency;
     public float shakeDuration;
     public float musicParticlesLifetime;
     public ParticleSystem particles;
     public CircleCollider2D soundCollider;
     public int SoundForce;
-
-
+    
     private AudioSource soundPlayer;
     private bool canShoot =true;
     private SpriteRenderer sr;
@@ -73,6 +73,7 @@ public class Guitar : MonoBehaviour
     {
         //Get References
         Animator sAnim = guitarEffect.GetComponent<Animator>();
+        sAnim.speed = animatorSpeed;
         SpriteRenderer sRend = guitarEffect.GetComponent<SpriteRenderer>();
 
         if (canShoot)
@@ -87,7 +88,7 @@ public class Guitar : MonoBehaviour
             //Generate random color and add it
             Color riffColor = Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
             Color riffColorA = riffColor;
-            riffColorA.a = 0.1f;
+            riffColorA.a = cooldownTransparency;
             sRend.color = riffColorA;
             effLight.color = riffColor;
             
