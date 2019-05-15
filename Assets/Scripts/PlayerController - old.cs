@@ -83,7 +83,7 @@ public class PlayerController : MonoBehaviour
         Quaternion mouseAngle = Quaternion.AngleAxis(angle, Vector3.forward);
         aimLine.transform.rotation = mouseAngle;
 
-        Weapon.setRotation(mouseAngle);
+        Weapon.SetRotation(mouseAngle);
     }
 
     private void manageMovement(Vector2 input)

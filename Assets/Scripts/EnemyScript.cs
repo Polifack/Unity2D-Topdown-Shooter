@@ -4,12 +4,16 @@ using UnityEngine;
 
 public class EnemyScript : MonoBehaviour
 {
+    /* Habría que cambiar el comportamiento del enemigo a una maquina de estados */
+
     public int MaxHealth = 5;
     public GameObject Particles;
     public GameObject BloodStain;
     public int Damage = 1;
 
     int currentHealth;
+    public float MoveAgainTimer = 0.5f;
+    float cTimer;
     bool isAlive=true;
     Rigidbody2D rb;
     Animator anim;
@@ -22,19 +26,23 @@ public class EnemyScript : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         sr = GetComponent<SpriteRenderer>();
+        cTimer = MoveAgainTimer;
     }
 
     void Update()
     {
 
-        if(isAlive) FollowPlayer();
+        if (isAlive && cTimer > MoveAgainTimer) FollowPlayer();
+        else {
+            cTimer += Time.deltaTime;
+        }
         anim.SetFloat("LookX", facingTo.x);
         anim.SetFloat("LookY", facingTo.y);
     }
     private void FollowPlayer()
     {
         Vector2 position = rb.position;
-        Vector2 newPosition = Vector2.MoveTowards(position, PlayerController.instance.gameObject.transform.position, 5 * Time.deltaTime);
+        Vector2 newPosition = Vector2.MoveTowards(position, Player.instance.gameObject.transform.position, 5 * Time.deltaTime);
         facingTo = (newPosition- position).normalized;
 
         rb.MovePosition(newPosition);
@@ -68,6 +76,9 @@ public class EnemyScript : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))
-            PlayerController.instance.TakeDamage(Damage, facingTo);
+        {
+            Player.instance.TakeDamage(Damage, facingTo);
+            cTimer = 0;
+        }
     }
 }

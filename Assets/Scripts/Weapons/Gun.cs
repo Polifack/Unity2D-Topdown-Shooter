@@ -2,22 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Gun : MonoBehaviour
+public class Gun : Heldable
 {
     public SOWeapon WeaponData;
 
     public GameObject BulletPrefab;
     public Transform ShootPoint;
     public SpriteRenderer Hand;
-    public SpriteRenderer Hand2;
 
     private AudioClip shootSfx;
     private float coolDown;
     private AudioSource soundPlayer;
-    private bool canShoot =true;
+    private bool canShoot = true;
     private SpriteRenderer sr;
     private SpriteRenderer srH;
-    private SpriteRenderer srH2;
     private Animator anim;
 
     private void Awake()
@@ -27,30 +25,47 @@ public class Gun : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
         sr.sprite = WeaponData.WeaponSprite;
         srH = Hand;
-        if (Hand2 != null) srH2 = Hand2;
         shootSfx = WeaponData.ShootSFX;
         coolDown = WeaponData.CoolDown;
     }
-
-    public void setRotation(Quaternion r)
+    public override void SetRotationMain(Quaternion r)
     {
+        srH.enabled = true;
         sr.transform.rotation = r;
-        //no rotar si z=-0.5 y w=0.8 
-        //Debug.Log(r.w);
-        //Debug.Log(r.z);
-        rt(r);
-    }
 
-    private void rt(Quaternion r)
+        if (r.w < 0.7 && r.w > 0)   
+            sr.flipY = true;
+        else
+            sr.flipY = false;
+        if (r.z < 0.9999 && r.z > 0.05)
+        {
+            sr.sortingOrder = -2;
+            srH.sortingOrder = -1;
+        }
+        else
+        {
+            sr.sortingOrder = 1;
+            srH.sortingOrder = 2;
+        }
+    }
+    public override void SetRotationBack(Quaternion r)
     {
-        if (r.w < 0.7 && r.w > 0) sr.flipY = true;
-        else sr.flipY = false;
-        if (r.z < 0.9999 && r.z > 0.05) { sr.sortingOrder = -2; srH.sortingOrder = -1; if (srH2 != null) srH2.sortingOrder = -1; }
-        else { sr.sortingOrder = 1; srH.sortingOrder = 2; if (srH2 != null) srH2.sortingOrder = 2; }
+        Quaternion temp = transform.rotation;
+        temp.z = -0.75f;
+        transform.rotation = temp;
 
+        srH.enabled = false;
+        if (r.z < 0.9999 && r.z > 0.05)
+        {
+            sr.sortingOrder = 1;
+        }
+        else
+        {
+            sr.sortingOrder = -1;
+        }
     }
 
-    public IEnumerator Shoot(Vector2 aim)
+    public override IEnumerator Shoot(Vector2 aim)
     {
         if (canShoot)
         {
@@ -69,5 +84,20 @@ public class Gun : MonoBehaviour
         }
         yield return null;
 
+    }
+
+    public override void HideWeapon()
+    {
+        sr.enabled = false;
+        srH.enabled = false;
+        wasMain = isMainWeapon;
+        isMainWeapon = false;
+    }
+
+    public override void ShowWeapon()
+    {
+        sr.enabled = true;
+        srH.enabled = true;
+        isMainWeapon = wasMain;
     }
 }

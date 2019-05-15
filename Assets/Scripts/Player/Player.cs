@@ -5,17 +5,26 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public static Player instance;
+    private readonly Color DEFAULT_COLOR = Color.white;
+    private readonly Color TRANSPARENT_COLOR = new Color(1, 1, 1, 0);
 
     IPlayerState state;
     Rigidbody2D rb;
     Animator anim;
     AudioSource aud;
+    Collider2D col;
+    SpriteRenderer sr;
     Vector2 lookDirection = new Vector2(1, 0);
     PlayerHealthManager healthManager;
 
     [Header("Player Data")]
-    public float WalkSpeed = 5f;
     public int MaxHP = 10;
+
+    [Header("Player Movement Settings")]
+    public float WalkSpeed = 5f;
+    //Valor de prueba, lo ideal sería que el valor de Recoil se obtuviese del enemigo.
+    public float RecoilWeak = 10;
+    public float DodgeStrength = 10;
 
     [Header("Particle Settings")]
     public ParticleSystem WalkingParticles;
@@ -25,16 +34,20 @@ public class Player : MonoBehaviour
 
     [Header("Sound Settings")]
     public AudioClip WalkSFX;
+    public AudioClip DeathSFX;
+    public AudioClip DodgeSFX;
 
-    [Header("Shoot Settings")]
+    [Header("Weapon Settings")]
     public GameObject aimLine;
-    public Gun Weapon;
-    public Guitar Guitar;
+    public Heldable MainWeapon;
+    public Heldable SecondaryWeapon;
 
     public IPlayerState State { get => state; set => state = value; }
     public Rigidbody2D Rb { get => rb; set => rb = value; }
     public Animator Anim { get => anim; set => anim = value; }
     public AudioSource Aud { get => aud; set => aud = value; }
+    public Collider2D Col { get => col; set => col = value; }
+    public Vector2 LookDirection { get => lookDirection; set => lookDirection = value; }
 
     private void Awake()
     {
@@ -45,9 +58,12 @@ public class Player : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         aud = GetComponent<AudioSource>();
+        col = GetComponent<Collider2D>();
+        sr = GetComponent<SpriteRenderer>();
     }
     private void Start()
     {
+        MainWeapon.ChangeWeapon();
         healthManager = new PlayerHealthManager(MaxHP);
     }
     private void Update()
@@ -57,7 +73,7 @@ public class Player : MonoBehaviour
         HandleRayCasting();
     }
 
-    //Esto debería ser lógica del estado. Idle -> recibe daño; Walking -> recibe daño; Dodging -> no recibe daño
+    //FUNCIONES AUXILIARES DE LOS ESTADOS.
     public void Heal(int n)
     {
         healthManager.DoHealing(n);
@@ -65,18 +81,6 @@ public class Player : MonoBehaviour
     public void Damage(int n)
     {
         healthManager.DoDamage(n);
-    }
-    void OnGUI()
-    {
-        if (GUI.Button(new Rect(50, 1000, 80, 50), "DAMAGE"))
-            healthManager.DoDamage(1);
-        if (GUI.Button(new Rect(135, 1000, 80, 50), "HEAL"))
-            healthManager.DoHealing(1);
-    }
-    //
-    public void HandleInput(Input input)
-    {
-        State.HandleInput(this);
     }
     public void PlaySoundLoop(AudioClip clip)
     {
@@ -93,13 +97,59 @@ public class Player : MonoBehaviour
     {
         aud.PlayOneShot(clip);
     }
-    public void HandleShooting()
+    public void InstanciateParticles(ParticleSystem particles, Transform pos)
     {
-        if (Input.GetMouseButtonDown(0))
-            StartCoroutine(Guitar.Shred());
-            //StartCoroutine(Weapon.Shoot(lookDirection));
-        
+        Instantiate(particles, pos);
     }
+    public void HideWeapons()
+    {
+        MainWeapon.HideWeapon();
+        SecondaryWeapon.HideWeapon();
+    }
+    public void ShowWeapons()
+    {
+        MainWeapon.ShowWeapon();
+        SecondaryWeapon.ShowWeapon();
+    }
+    public void ChangeColor (Color color)
+    {
+        sr.color = color;
+    }
+    public void ChangeEnemyCol(bool value)
+    {
+        Physics2D.IgnoreCollision(GameObject.FindWithTag("Enemy").GetComponent<Collider2D>(),
+                        GetComponent<Collider2D>(),
+                        value);
+    }
+    public void EnableColorBlink(float delay)
+    {
+        InvokeRepeating("StartColorBlink", 0f, 0.1f);
+        Invoke("StopColorBlink", delay);
+    }
+    public void StartColorBlink()
+    {
+        sr.color = (sr.color == DEFAULT_COLOR) ? TRANSPARENT_COLOR : DEFAULT_COLOR;
+    }
+    public void StopColorBlink()
+    {
+        CancelInvoke("StartColorBlink");
+        sr.color = Color.white;
+    }
+    public int GetCurrentHealth()
+    {
+        return healthManager.GetCurrentHP();
+    }
+
+    //Class PlayerCollisionManager?
+    private void OnTriggerEnter2D(Collider2D collision)
+    { 
+        if (collision.gameObject.CompareTag("Item")) {
+            collision.gameObject.GetComponent<PickeableItem>().onPlayerEnter();
+            //if recogible añadir item y destruir el gameobject
+        }
+    }
+
+    //Class PlayerRaycastManager?
     public void HandleRayCasting()
     {
         RaycastHit2D hit = Physics2D.Raycast(rb.position + Vector2.up * 0.2f, lookDirection, 1.5f, LayerMask.GetMask("NPC"));
@@ -113,6 +163,24 @@ public class Player : MonoBehaviour
                     character.onInteract();
             }
         }
+    }
+
+    //Class PlayerWeaponManager?
+    public void HandleWeaponSwitch()
+    {
+        Heldable temp = SecondaryWeapon;
+        SecondaryWeapon = MainWeapon;
+        MainWeapon = temp;
+
+        MainWeapon.ChangeWeapon();
+        SecondaryWeapon.ChangeWeapon();
+    }
+    public void HandleShooting()
+    {
+        if (Input.GetMouseButtonDown(0))
+            StartCoroutine(MainWeapon.Shoot(lookDirection));
+        //StartCoroutine(Weapon.Shoot(lookDirection));
+
     }
     public void HandlePlayerAim()
     {
@@ -137,11 +205,19 @@ public class Player : MonoBehaviour
         Quaternion mouseAngle = Quaternion.AngleAxis(angle, Vector3.forward);
         aimLine.transform.rotation = mouseAngle;
 
-        if (Weapon) Weapon.setRotation(mouseAngle);
+        MainWeapon.SetRotation(mouseAngle);
+        SecondaryWeapon.SetRotation(mouseAngle);
     }
-    public void InstanciateParticles(ParticleSystem particles, Transform pos)
+
+    //FUNCIONES QUE DELEGAN SU COMPORTAMIENTO EN EL ESTADO
+    public void HandleInput(Input input)
     {
-        Instantiate(particles, pos);
+        State.HandleInput(this);
+    }
+    public void TakeDamage(int damage, Vector2 facingTo)
+    {
+        Damage(damage);
+        State.HandleDamage(this, facingTo, RecoilWeak);
     }
 }
 

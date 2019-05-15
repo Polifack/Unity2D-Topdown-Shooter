@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6914253928398940539}
   - component: {fileID: 6914253928398940540}
   - component: {fileID: 6914253928398940538}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: SkelletonEnemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -71,8 +71,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1866777033
-  m_SortingLayer: 5
-  m_SortingOrder: 0
+  m_SortingLayer: 6
+  m_SortingOrder: -1
   m_Sprite: {fileID: 21300000, guid: 8176c399f1611db4e80fc0523cf66c14, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -178,7 +178,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6914253930309746407}
   - component: {fileID: 6914253930309746406}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Shadow
   m_TagString: Untagged
   m_Icon: {fileID: 0}

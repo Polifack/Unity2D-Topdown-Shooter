@@ -9,4 +9,5 @@ public interface IPlayerState
     void ToState(Player player, IPlayerState target);
     void Update(Player player);
     void HandleInput(Player player);
+    void HandleDamage(Player player, Vector2 recoilDirection, float recoilStrength);
 }
