@@ -17,7 +17,6 @@ public class PlayerIdleState : PlayerState
     }
     public override void Update(Player character)
     {
-        HandleInput(character);
         character.HandleShooting();
     }
     public override void HandleDamage(Player character, Vector2 recoilDirection, float recoilStrength)

@@ -41,7 +41,6 @@ public class PlayerRecoilState : PlayerState
 
     public override void Update(Player character)
     {
-        HandleInput(character);
         character.HandleShooting();
 
         if (cTime < recoilTime)

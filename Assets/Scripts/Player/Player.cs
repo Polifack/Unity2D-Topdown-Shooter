@@ -19,6 +19,7 @@ public class Player : MonoBehaviour
 
     [Header("Player Data")]
     public int MaxHP = 10;
+    public List<InventoryItem> Inventory = new List<InventoryItem>();
 
     [Header("Player Movement Settings")]
     public float WalkSpeed = 5f;
@@ -64,13 +65,19 @@ public class Player : MonoBehaviour
     private void Start()
     {
         MainWeapon.ChangeWeapon();
+
+        //Usar el mismo patron que para el health manager
+        InventoryUI.instance.gameObject.SetActive(false);
+        
         healthManager = new PlayerHealthManager(MaxHP);
+        Inventory = new List<InventoryItem>();
     }
     private void Update()
     {
         State.Update(this);
         HandlePlayerAim();
         HandleRayCasting();
+        HandleInput();
     }
 
     //FUNCIONES AUXILIARES DE LOS ESTADOS.
@@ -117,6 +124,7 @@ public class Player : MonoBehaviour
     }
     public void ChangeEnemyCol(bool value)
     {
+        if (GameObject.FindWithTag("Enemy")!=null)
         Physics2D.IgnoreCollision(GameObject.FindWithTag("Enemy").GetComponent<Collider2D>(),
                         GetComponent<Collider2D>(),
                         value);
@@ -144,7 +152,7 @@ public class Player : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     { 
         if (collision.gameObject.CompareTag("Item")) {
-            collision.gameObject.GetComponent<PickeableItem>().onPlayerEnter();
+            collision.gameObject.GetComponent<PickeableItem>().onPlayerEnter(this);
             //if recogible añadir item y destruir el gameobject
         }
     }
@@ -209,10 +217,54 @@ public class Player : MonoBehaviour
         SecondaryWeapon.SetRotation(mouseAngle);
     }
 
+    //Class PlayerInventoryManager?
+    public int AddItem(InventoryItem newItem)
+    {
+        if (Inventory.Contains(newItem))
+        {
+            InventoryItem existingItem = Inventory[Inventory.IndexOf(newItem)];
+            existingItem.quantity += newItem.quantity;
+            return existingItem.quantity;
+        }
+        else
+        {
+            Inventory.Add(newItem);
+            return newItem.quantity;
+        }
+    }
+    public int RemoveItem(InventoryItem newItem)
+    {
+        InventoryItem existingItem = Inventory[Inventory.IndexOf(newItem)];
+        existingItem.quantity -= newItem.quantity;
+        if (existingItem.quantity == 0) Inventory.Remove(existingItem);
+        return existingItem.quantity;
+
+    }
+    public void DebugInventory()
+    {
+        foreach (InventoryItem item in Inventory)
+        {
+            Debug.Log(" * " + item.item.itemName + " : " + item.quantity);
+        }
+    }
+    public void HandleInventoryOpening()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape)){
+            DebugInventory();
+            InventoryUI.instance.gameObject.SetActive(value: !InventoryUI.instance.gameObject.activeSelf);
+            //Si lo estamos abriendo
+            if (InventoryUI.instance.gameObject.activeSelf)
+            {
+                InventoryUI.instance.ShowInventory(Inventory);
+            }
+        }
+    }
+
     //FUNCIONES QUE DELEGAN SU COMPORTAMIENTO EN EL ESTADO
-    public void HandleInput(Input input)
+    public void HandleInput()
     {
         State.HandleInput(this);
+        HandleInventoryOpening();
     }
     public void TakeDamage(int damage, Vector2 facingTo)
     {

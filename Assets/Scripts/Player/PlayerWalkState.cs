@@ -24,7 +24,6 @@ public class PlayerWalkState : PlayerState
     }
     public override void Update(Player character)
     {
-        HandleInput(character);
         character.HandleShooting();
 
         Vector2 position = character.Rb.position;
