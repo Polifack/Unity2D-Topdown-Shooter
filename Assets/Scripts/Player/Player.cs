@@ -15,11 +15,14 @@ public class Player : MonoBehaviour
     Collider2D col;
     SpriteRenderer sr;
     Vector2 lookDirection = new Vector2(1, 0);
-    PlayerHealthManager healthManager;
+
+    //Managers
+    HealthManager healthManager;
+    InventoryManager inventoryManager;
 
     [Header("Player Data")]
     public int MaxHP = 10;
-    public List<InventoryItem> Inventory = new List<InventoryItem>();
+    public bool canMove = false;
 
     [Header("Player Movement Settings")]
     public float WalkSpeed = 5f;
@@ -32,11 +35,6 @@ public class Player : MonoBehaviour
     public Transform WalkingParticlesPosition;
     [RangeAttribute(0, 100)]
     public int WalkingParticlesProbability = 10;
-
-    [Header("Sound Settings")]
-    public AudioClip WalkSFX;
-    public AudioClip DeathSFX;
-    public AudioClip DodgeSFX;
 
     [Header("Weapon Settings")]
     public GameObject aimLine;
@@ -65,12 +63,11 @@ public class Player : MonoBehaviour
     private void Start()
     {
         MainWeapon.ChangeWeapon();
-
-        //Usar el mismo patron que para el health manager
-        InventoryUI.instance.gameObject.SetActive(false);
         
-        healthManager = new PlayerHealthManager(MaxHP);
-        Inventory = new List<InventoryItem>();
+        //Esto es un placeholder, el inventario se guardará de forma persistente
+        //Igual para la current HP con la que se inicializa el PlayerHealthManager
+        inventoryManager = new InventoryManager(0, new List<InventoryItem>());
+        healthManager = new HealthManager(MaxHP);
     }
     private void Update()
     {
@@ -80,7 +77,7 @@ public class Player : MonoBehaviour
         HandleInput();
     }
 
-    //FUNCIONES AUXILIARES DE LOS ESTADOS.
+    //FUNCIONES AUXILIARES.
     public void Heal(int n)
     {
         healthManager.DoHealing(n);
@@ -88,21 +85,6 @@ public class Player : MonoBehaviour
     public void Damage(int n)
     {
         healthManager.DoDamage(n);
-    }
-    public void PlaySoundLoop(AudioClip clip)
-    {
-        aud.loop = true;
-        aud.clip = clip;
-        if (!aud.isPlaying)
-            aud.Play();
-    }
-    public void StopSoundLoop()
-    {
-        aud.Stop();
-    }
-    public void PlaySoundOneShot(AudioClip clip)
-    {
-        aud.PlayOneShot(clip);
     }
     public void InstanciateParticles(ParticleSystem particles, Transform pos)
     {
@@ -146,6 +128,14 @@ public class Player : MonoBehaviour
     public int GetCurrentHealth()
     {
         return healthManager.GetCurrentHP();
+    }
+    public void AddItem(InventoryItem newItem)
+    {
+        inventoryManager.addItem(newItem);
+    }
+    public void RemoveItem(InventoryItem newItem)
+    {
+        inventoryManager.removeItem(newItem);
     }
 
     //Class PlayerCollisionManager?
@@ -217,45 +207,22 @@ public class Player : MonoBehaviour
         SecondaryWeapon.SetRotation(mouseAngle);
     }
 
-    //Class PlayerInventoryManager?
-    public int AddItem(InventoryItem newItem)
-    {
-        if (Inventory.Contains(newItem))
-        {
-            InventoryItem existingItem = Inventory[Inventory.IndexOf(newItem)];
-            existingItem.quantity += newItem.quantity;
-            return existingItem.quantity;
-        }
-        else
-        {
-            Inventory.Add(newItem);
-            return newItem.quantity;
-        }
-    }
-    public int RemoveItem(InventoryItem newItem)
-    {
-        InventoryItem existingItem = Inventory[Inventory.IndexOf(newItem)];
-        existingItem.quantity -= newItem.quantity;
-        if (existingItem.quantity == 0) Inventory.Remove(existingItem);
-        return existingItem.quantity;
-
-    }
-    public void DebugInventory()
-    {
-        foreach (InventoryItem item in Inventory)
-        {
-            Debug.Log(" * " + item.item.itemName + " : " + item.quantity);
-        }
-    }
+    //Input Handler
     public void HandleInventoryOpening()
     {
         if (Input.GetKeyDown(KeyCode.Escape)){
-            DebugInventory();
-            InventoryUI.instance.gameObject.SetActive(value: !InventoryUI.instance.gameObject.activeSelf);
-            //Si lo estamos abriendo
-            if (InventoryUI.instance.gameObject.activeSelf)
+            if (UIManager.singleton.IsActiveScreen("uiPause"))
             {
-                InventoryUI.instance.ShowInventory(Inventory);
+                //Desactivamos el menu de inventario
+                canMove = true;
+                UIManager.singleton.ChangeActiveScreen("uiDefault");
+            }
+            else
+            {
+                //Activamos el menu de inventario
+                canMove = false;
+                UIManager.singleton.ChangeActiveScreen("uiPause");
+                inventoryManager.updateInventory();
             }
         }
     }
@@ -263,6 +230,7 @@ public class Player : MonoBehaviour
     //FUNCIONES QUE DELEGAN SU COMPORTAMIENTO EN EL ESTADO
     public void HandleInput()
     {
+        if (canMove)
         State.HandleInput(this);
         HandleInventoryOpening();
     }

@@ -13,6 +13,7 @@ public class PlayerRecoilState : PlayerState
 
     public override void OnEnterState(Player character)
     {
+        AudioManager.singleton.Play("playerGrunt");
         character.ChangeEnemyCol(true);
         cTime = 0;
         character.EnableColorBlink(recoilTime);

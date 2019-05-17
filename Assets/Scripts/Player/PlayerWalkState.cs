@@ -8,11 +8,12 @@ public class PlayerWalkState : PlayerState
 
     public override void OnEnterState(Player character) {
         character.Anim.Play("MovementBlend");
-        character.PlaySoundLoop(character.WalkSFX);
+
+        AudioManager.singleton.Play("playerWalk");
     }
     public override void OnExitState(Player character)
     {
-        character.StopSoundLoop();
+        AudioManager.singleton.Stop("playerWalk");
     }
     public override void HandleInput(Player character)
     {

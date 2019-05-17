@@ -10,6 +10,7 @@ public class EnemyScript : MonoBehaviour
     public GameObject Particles;
     public GameObject BloodStain;
     public int Damage = 1;
+    public float targetDistance;
 
     int currentHealth;
     public float MoveAgainTimer = 0.5f;
@@ -42,10 +43,13 @@ public class EnemyScript : MonoBehaviour
     private void FollowPlayer()
     {
         Vector2 position = rb.position;
-        Vector2 newPosition = Vector2.MoveTowards(position, Player.instance.gameObject.transform.position, 5 * Time.deltaTime);
-        facingTo = (newPosition- position).normalized;
+        if (Vector2.Distance(position, Player.instance.transform.position) < targetDistance)
+        {
+            Vector2 newPosition = Vector2.MoveTowards(position, Player.instance.gameObject.transform.position, 5 * Time.deltaTime);
+            facingTo = (newPosition - position).normalized;
 
-        rb.MovePosition(newPosition);
+            rb.MovePosition(newPosition);
+        }
     }
     public void takeDamage(int n, Vector2 dir)
     {

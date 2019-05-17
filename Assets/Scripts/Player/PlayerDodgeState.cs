@@ -9,9 +9,10 @@ public class PlayerDodgeState : PlayerState
     Vector2 dodgeDirection;
     public override void OnEnterState(Player character)
     {
+        AudioManager.singleton.Play("playerDodge");
+
         character.Anim.Play("DodgeBlend");
         character.InstanciateParticles(character.WalkingParticles, character.WalkingParticlesPosition);
-        character.PlaySoundOneShot(character.DodgeSFX);
         character.ChangeEnemyCol(true);
         cTime = 0;
         dodgeDirection = character.LookDirection;

@@ -6,8 +6,9 @@ public class PlayerDeathState : PlayerState
 {
     public override void OnEnterState(Player character)
     {
+        AudioManager.singleton.Play("playerDeath");
+
         character.Anim.Play("DeathBlend");
-        character.PlaySoundOneShot(character.DeathSFX);
         character.HideWeapons();
     }
 

@@ -32,6 +32,7 @@ public class Guitar : Heldable
 
     private float lastClickTime;
     private int nextNote;
+    private bool burstMode;
 
     public override void SetRotationMain(Quaternion r)
     {
@@ -73,8 +74,26 @@ public class Guitar : Heldable
     private void OnTriggerEnter2D(Collider2D collision)
     {
         Vector2 knockback = SoundForce * (collision.transform.position - transform.position);
-        Debug.Log(collision.gameObject.name);
+        if (burstMode)
+        {
+            Debug.Log("explotando un " + collision.gameObject.name);
+            if (collision.GetComponent<Explotable>() != null)
+            {
+                collision.GetComponent<Explotable>().Explode();
+            }
+        }
     }
+
+    private IEnumerator generateExplosion()
+    {
+        Debug.Log("boom!");
+        soundCollider.radius *= 2;
+        burstMode = true;
+        yield return new WaitForSeconds(shredTime);
+        soundCollider.radius /= 2;
+        burstMode = false;
+    }
+
     public override IEnumerator Shoot(Vector2 aim)
     {
         if (canShoot)
@@ -84,7 +103,11 @@ public class Guitar : Heldable
             canShoot = false;
 
             //Check index out of bounds
-            if (nextNote >= guitarSFX.Length) nextNote = 0;
+            if (nextNote >= guitarSFX.Length)
+            {
+                nextNote = 0;
+                StartCoroutine(generateExplosion());
+            }
 
             //Generate random color and add it
             Color riffColor = Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
