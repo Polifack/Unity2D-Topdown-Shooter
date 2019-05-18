@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerDodgeState : PlayerState
+public class PlayerStateDodge : PlayerState
 {
     float dodgeTime = 0.5f;
     float cTime;

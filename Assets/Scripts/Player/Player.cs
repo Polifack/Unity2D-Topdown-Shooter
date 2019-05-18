@@ -19,6 +19,7 @@ public class Player : MonoBehaviour
     //Managers
     HealthManager healthManager;
     InventoryManager inventoryManager;
+    WeaponManager weaponManager;
 
     [Header("Player Data")]
     public int MaxHP = 10;
@@ -26,7 +27,6 @@ public class Player : MonoBehaviour
 
     [Header("Player Movement Settings")]
     public float WalkSpeed = 5f;
-    //Valor de prueba, lo ideal sería que el valor de Recoil se obtuviese del enemigo.
     public float RecoilWeak = 10;
     public float DodgeStrength = 10;
 
@@ -38,8 +38,8 @@ public class Player : MonoBehaviour
 
     [Header("Weapon Settings")]
     public GameObject aimLine;
-    public Heldable MainWeapon;
-    public Heldable SecondaryWeapon;
+    public Weapon Weapon;
+    public Weapon Guitar;
 
     public IPlayerState State { get => state; set => state = value; }
     public Rigidbody2D Rb { get => rb; set => rb = value; }
@@ -62,10 +62,7 @@ public class Player : MonoBehaviour
     }
     private void Start()
     {
-        MainWeapon.ChangeWeapon();
-        
-        //Esto es un placeholder, el inventario se guardará de forma persistente
-        //Igual para la current HP con la que se inicializa el PlayerHealthManager
+        weaponManager = new WeaponManager(Weapon, Guitar);
         inventoryManager = new InventoryManager(0, new List<InventoryItem>());
         healthManager = new HealthManager(MaxHP);
     }
@@ -92,13 +89,17 @@ public class Player : MonoBehaviour
     }
     public void HideWeapons()
     {
-        MainWeapon.HideWeapon();
-        SecondaryWeapon.HideWeapon();
+        Weapon.HideWeapon();
+        Guitar.HideWeapon();
     }
     public void ShowWeapons()
     {
-        MainWeapon.ShowWeapon();
-        SecondaryWeapon.ShowWeapon();
+        Weapon.ShowWeapon();
+        Guitar.ShowWeapon();
+    }
+    public void Shoot()
+    {
+        weaponManager.handleShooting(lookDirection);
     }
     public void ChangeColor (Color color)
     {
@@ -138,7 +139,7 @@ public class Player : MonoBehaviour
         inventoryManager.removeItem(newItem);
     }
 
-    //Class PlayerCollisionManager?
+    //Collision
     private void OnTriggerEnter2D(Collider2D collision)
     { 
         if (collision.gameObject.CompareTag("Item")) {
@@ -147,7 +148,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    //Class PlayerRaycastManager?
+    //Raycast
     public void HandleRayCasting()
     {
         RaycastHit2D hit = Physics2D.Raycast(rb.position + Vector2.up * 0.2f, lookDirection, 1.5f, LayerMask.GetMask("NPC"));
@@ -163,23 +164,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    //Class PlayerWeaponManager?
-    public void HandleWeaponSwitch()
-    {
-        Heldable temp = SecondaryWeapon;
-        SecondaryWeapon = MainWeapon;
-        MainWeapon = temp;
-
-        MainWeapon.ChangeWeapon();
-        SecondaryWeapon.ChangeWeapon();
-    }
-    public void HandleShooting()
-    {
-        if (Input.GetMouseButtonDown(0))
-            StartCoroutine(MainWeapon.Shoot(lookDirection));
-        //StartCoroutine(Weapon.Shoot(lookDirection));
-
-    }
+    //Aim
     public void HandlePlayerAim()
     {
         Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -203,11 +188,11 @@ public class Player : MonoBehaviour
         Quaternion mouseAngle = Quaternion.AngleAxis(angle, Vector3.forward);
         aimLine.transform.rotation = mouseAngle;
 
-        MainWeapon.SetRotation(mouseAngle);
-        SecondaryWeapon.SetRotation(mouseAngle);
+        Weapon.SetRotation(mouseAngle);
+        Guitar.SetRotation(mouseAngle);
     }
 
-    //Input Handler
+    //Input
     public void HandleInventoryOpening()
     {
         if (Input.GetKeyDown(KeyCode.Escape)){

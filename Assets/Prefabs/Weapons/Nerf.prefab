@@ -66,7 +66,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1866777033
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 2
   m_Sprite: {fileID: 21300000, guid: d05eea10713ff03468559b5c867b9253, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -119,16 +119,16 @@ GameObject:
   m_Component:
   - component: {fileID: 8529457542334675171}
   - component: {fileID: 8689464690233331452}
-  - component: {fileID: 3175206987741636399}
   - component: {fileID: 764971906273349012}
   - component: {fileID: 6375863054474926360}
+  - component: {fileID: 3521612563863353541}
   m_Layer: 0
   m_Name: Nerf
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8529457542334675171
 Transform:
   m_ObjectHideFlags: 0
@@ -180,7 +180,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1866777033
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: f2e81c2967e385447aa403504b080bc2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -193,24 +193,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &3175206987741636399
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7299221738418134520}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f57e8ab2441051448bceaa5445941b40, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  WeaponData: {fileID: 11400000, guid: 95bc58177ccd27d4fab0c2e0741939b1, type: 2}
-  BulletPrefab: {fileID: 1889049145710323155, guid: c48d83a7147fdd049a46dd5c6f3996a6,
-    type: 3}
-  ShootPoint: {fileID: 3115586443120012982}
-  Hand: {fileID: 92163105}
-  Hand2: {fileID: 0}
 --- !u!82 &764971906273349012
 AudioSource:
   m_ObjectHideFlags: 0
@@ -326,3 +308,21 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &3521612563863353541
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7299221738418134520}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40559df00531fd64f9961a285d6602f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gun: {fileID: 11400000, guid: 3390458aee9edae46a1498dd6a248f85, type: 2}
+  BulletPrefab: {fileID: 1889049145710323155, guid: c48d83a7147fdd049a46dd5c6f3996a6,
+    type: 3}
+  ShootPoint: {fileID: 3115586443120012982}
+  Hand: {fileID: 92163105}
+  bullets: 10

@@ -4,11 +4,11 @@ using UnityEngine;
 
 public abstract class PlayerState : IPlayerState
 {
-    public static readonly PlayerWalkState STATE_WALK = new PlayerWalkState();
-    public static readonly PlayerIdleState STATE_IDLE = new PlayerIdleState();
-    public static readonly PlayerDodgeState STATE_DODGE = new PlayerDodgeState();
-    public static readonly PlayerRecoilState STATE_RECOIL = new PlayerRecoilState();
-    public static readonly PlayerDeathState STATE_DEATH = new PlayerDeathState();
+    public static readonly PlayerStateWalk STATE_WALK = new PlayerStateWalk();
+    public static readonly PlayerStateIdle STATE_IDLE = new PlayerStateIdle();
+    public static readonly PlayerStateDodge STATE_DODGE = new PlayerStateDodge();
+    public static readonly PlayerStateRecoil STATE_RECOIL = new PlayerStateRecoil();
+    public static readonly PlayerStateDeath STATE_DEATH = new PlayerStateDeath();
 
 
     public virtual void OnEnterState(Player character) { }

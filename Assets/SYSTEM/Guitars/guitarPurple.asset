@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10dbd2dbc57e6974e9e6cd29287c5252, type: 3}
+  m_Name: guitarPurple
+  m_EditorClassIdentifier: 
+  Name: Purply
+  RiffTime: 0.3
+  Song:
+  - {fileID: 8300000, guid: e195d5b519aa4d24bb44ddc7193e598e, type: 3}
+  - {fileID: 8300000, guid: 37ec52e27ab9e69449fc989476b1b2e3, type: 3}
+  - {fileID: 8300000, guid: c32a036ed6b394b4687ae6a8d7716a68, type: 3}
+  - {fileID: 8300000, guid: 9b7df2a171aa853499f01e3306023e18, type: 3}
+  - {fileID: 8300000, guid: 60f2f3353c37cd047b751f1935e7ed22, type: 3}
+  - {fileID: 8300000, guid: 01fef816a83356546bf379ecf5246aff, type: 3}
+  - {fileID: 8300000, guid: 68626fdf1173d3c4f99672bb13191830, type: 3}
+  - {fileID: 8300000, guid: 87a4bd11d539c2649b23d83956df6e94, type: 3}
+  - {fileID: 8300000, guid: c34972849414c2944adea23a5ca36c14, type: 3}
+  - {fileID: 8300000, guid: a6531fc00efa59c47906b4b0261c8e7f, type: 3}
+  - {fileID: 8300000, guid: 753f5e9f60c26f0488295d205caf0737, type: 3}
+  - {fileID: 8300000, guid: c248c3db8ebd73f459ad15d872874bd3, type: 3}
+  - {fileID: 8300000, guid: 0c2abbf43912e574d9c3ab0f22a2a12d, type: 3}
+  - {fileID: 8300000, guid: 9ba6a1e371013ce44be215ef53e12594, type: 3}
+  - {fileID: 8300000, guid: 141d7335d9fc9ae48a511b8b5f6bfd3f, type: 3}
+  GuitarSprite: {fileID: 21300000, guid: 327e1b4416643994c95a41f2c6ad5475, type: 3}

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerDeathState : PlayerState
+public class PlayerStateDeath : PlayerState
 {
     public override void OnEnterState(Player character)
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerWalkState : PlayerState
+public class PlayerStateWalk : PlayerState
 {
     private Vector2 input;
 
@@ -17,15 +17,16 @@ public class PlayerWalkState : PlayerState
     }
     public override void HandleInput(Player character)
     {
-        if (base.ComputeMovement().magnitude == 0) ToState(character, STATE_IDLE);
+        if (base.ComputeMovement().magnitude == 0)
+            ToState(character, STATE_IDLE);
         else input = base.ComputeMovement();
-        if (Input.GetKeyDown(KeyCode.X))character.HandleWeaponSwitch();
-        if (Input.GetKeyDown(KeyCode.Space)) ToState(character, STATE_DODGE);
+        if (Input.GetKeyDown(KeyCode.Space))
+            ToState(character, STATE_DODGE);
 
     }
     public override void Update(Player character)
     {
-        character.HandleShooting();
+        character.Shoot();
 
         Vector2 position = character.Rb.position;
         position = position + Vector2.ClampMagnitude(input * character.WalkSpeed, character.WalkSpeed) * Time.deltaTime;

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb0b9a9ecdcb5b4429e6f048281c0b33, type: 3}
+  m_Name: Felipe
+  m_EditorClassIdentifier: 
+  Name: Felipe
+  Dialog:
+  - Hola soy Felipe, y no tengo frenillo.
+  - 'Mata a los esqueletos por favor. '
+  IdleFront: {fileID: 7400000, guid: ecaea990e42206c4b9584102a7944891, type: 2}
+  IdleRight: {fileID: 0}
+  IdleLeft: {fileID: 0}
+  IdleBack: {fileID: 0}
+  Animator: {fileID: 0}
+  defaultNpcSprite: {fileID: 21300000, guid: 14cd10e3d9d3b81458f7bd8356de7ee1, type: 3}

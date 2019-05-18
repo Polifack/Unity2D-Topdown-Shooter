@@ -1,100 +1,120 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
+using UnityEditor.Animations;
 using UnityEngine;
+using UnityEngine.Animations;
+using UnityEngine.Playables;
 
 public class InteractableNPC : Interactable
 {
     [Header("Datos del NPC")]
-    public string NPCName;
-    [TextArea(3, 10)]
-    public string[] Dialog;
+    public GameNPC npcData;
 
     [Header("Parametros del elemento interactuable")]
     public GameObject InteractElement;
     public Transform InteractInstanciationPosition;
-    private float interactElementCounter = 0f;
-    private bool interactShowing = false;
-    private GameObject interactElement;
+    private float _interactableTimeout = 0f;
+    private bool _interactableShowing = false;
+    private GameObject _interactableElement;
 
     [Header("Parametros del elemento de dialogo")]
     public GameObject DialogElement;
     public Transform DialogInstanciationPosition;
-    private float dialogElementCounter = 0f;
-    private bool dialogShowing = false;
-    private GameObject dialogElement;
+    private float _dialogTimeout = 0f;
+    private bool _dialogShowing = false;
+    private GameObject _dialogElement;
 
     public override void onRaycastEnter()
     {
-        if (dialogShowing)
+        if (_dialogShowing)
         {
-            dialogElementCounter = Timeout;
+            _dialogTimeout = Timeout;
             return;
         }
 
-        if (interactElement == null)
+        if (_interactableElement == null)
         {
-            interactElement = Instantiate(InteractElement, InteractInstanciationPosition);
+            _interactableElement = Instantiate(InteractElement, InteractInstanciationPosition);
         }
 
-        InteractableManager interactableManager = interactElement.gameObject.GetComponentInChildren<InteractableManager>();
-        interactableManager.SetInteractableName(NPCName);
+        InteractableManager interactableManager = _interactableElement.gameObject.GetComponentInChildren<InteractableManager>();
+        interactableManager.SetInteractableName(npcData.Name);
         interactableManager.StartInteractable();
 
-        interactShowing = true;
+        _interactableShowing = true;
 
-        interactElementCounter = Timeout;
+        _interactableTimeout = Timeout;
         
         
     }
     public override void onInteract()
     {
-        if (dialogElement == null)
+        if (_dialogElement == null)
         {
-            dialogElement = Instantiate(DialogElement, DialogInstanciationPosition);
+            _dialogElement = Instantiate(DialogElement, DialogInstanciationPosition);
         }
 
-        DialogueManager dialogManager = dialogElement.gameObject.GetComponentInChildren<DialogueManager>();
+        DialogueManager dialogManager = _dialogElement.gameObject.GetComponentInChildren<DialogueManager>();
 
-        if (!dialogShowing)
+        if (!_dialogShowing)
         {
-            dialogShowing = true;
-            dialogElementCounter = Timeout;
+            _dialogShowing = true;
+            _dialogTimeout = Timeout;
             stopInteractableElement();
-            dialogManager.StartDialogue(Dialog);
+            dialogManager.StartDialogue(npcData.Dialog);
         }
         else
         {
-            if (dialogManager.DisplayNexSentence()) dialogShowing = false;
+            if (dialogManager.DisplayNexSentence()) _dialogShowing = false;
         }
 
     }
 
     private void stopInteractableElement()
     {
-        interactElement.gameObject.GetComponentInChildren<InteractableManager>().EndInteractable();
-        interactShowing = false;
+        _interactableElement.gameObject.GetComponentInChildren<InteractableManager>().EndInteractable();
+        _interactableShowing = false;
     }
     private void stopDialogElement()
     {
-        dialogElement.gameObject.GetComponentInChildren<DialogueManager>().EndDialogue();
-        dialogShowing = false;
+        _dialogElement.gameObject.GetComponentInChildren<DialogueManager>().EndDialogue();
+        _dialogShowing = false;
     }
 
     private void Awake()
     {
-        if (InteractElement == null || DialogElement == null) throw new System.Exception("Elements can't be null");
+        if (InteractElement == null || DialogElement == null)
+        {
+            Debug.LogWarning(" * Error: Interactable elements should not be null!");
+            return;
+        }
+        GetComponent<SpriteRenderer>().sprite = npcData.defaultNpcSprite;
+    }
+    private void Start()
+    {
+        InitializeAnimations();
     }
     private void FixedUpdate()
     {
-        if (interactShowing && (interactElementCounter -= Time.deltaTime) < 0)
+        if (_interactableShowing && (_interactableTimeout -= Time.deltaTime) < 0)
         {
             stopInteractableElement();
         }
 
-        if (dialogShowing && (dialogElementCounter -= Time.deltaTime) < 0)
+        if (_dialogShowing && (_dialogTimeout -= Time.deltaTime) < 0)
         {
             stopDialogElement();
         }
     }
+    private void InitializeAnimations()
+    {
+        npcData.Animator = gameObject.AddComponent<Animator>();
 
+        PlayableGraph playableGraph = PlayableGraph.Create();
+        AnimationClipPlayable clipPlayable = AnimationClipPlayable.Create(playableGraph, npcData.IdleFront);
+        AnimationPlayableOutput playableOutput = AnimationPlayableOutput.Create(playableGraph, "idleFront", npcData.Animator);
+        playableOutput.SetSourcePlayable(clipPlayable);
+        playableGraph.Play();
+    }
 }

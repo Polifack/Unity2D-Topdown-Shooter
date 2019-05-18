@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
-//Es necesario este estado?
-//Se podría simplificar añadiendo un canDamage al script principal y una corrutina?
 //Efectos de daño -> Particulas + Parpadeo + Camera Shake
-public class PlayerRecoilState : PlayerState
+public class PlayerStateRecoil : PlayerState
 {
     float recoilTime = 0.5f;
     float cTime;
@@ -35,14 +32,14 @@ public class PlayerRecoilState : PlayerState
     public override void HandleInput(Player character)
     {
         if (base.ComputeMovement().magnitude != 0) ToState(character, STATE_WALK);
-        character.HandleShooting();
+        character.Shoot();
 
         if (Input.GetKeyDown(KeyCode.Space)) ToState(character, STATE_DODGE);
     }
 
     public override void Update(Player character)
     {
-        character.HandleShooting();
+        character.Shoot();
 
         if (cTime < recoilTime)
         {

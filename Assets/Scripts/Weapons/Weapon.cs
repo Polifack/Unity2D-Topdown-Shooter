@@ -3,16 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //Clase de un objeto que pueda cargar un jugador / NPC
-public abstract class Heldable : MonoBehaviour
+public abstract class Weapon : MonoBehaviour
 {
-    public bool isMainWeapon = false;
-    public bool wasMain;
+    private bool isMainWeapon = false;
 
-    //Declarar este arma como el arma que esta siendo utilizada o que esta guardada
-    public void ChangeWeapon()
-    {
-        isMainWeapon = !isMainWeapon;
-    }
+    public bool IsMainWeapon { get => isMainWeapon; set => isMainWeapon = value; }
+
     //Usada para hacer que las armas se muevan al mirar
     public void SetRotation(Quaternion r){
         if (isMainWeapon) SetRotationMain(r);
@@ -27,5 +23,5 @@ public abstract class Heldable : MonoBehaviour
     public abstract void ShowWeapon();
 
     //Disparar o Atacar
-    public abstract IEnumerator Shoot(Vector2 aim);
+    public abstract void handleShooting(Vector2 aim);
 }
